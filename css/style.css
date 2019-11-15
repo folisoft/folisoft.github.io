@@ -535,6 +535,24 @@ h6 {
   color: #ED731E;
 }
 
+.general-list {
+  text-align: left;
+}
+.general-list ul {
+  list-style: none;
+  padding: 0;
+}
+
+.general-list ul li {
+  padding-bottom: 10px;
+}
+
+.general-list ul li i {
+  font-size: 20px;
+  padding-right: 4px;
+  color: #ED731E;
+}
+
 #about .about-img {
   position: relative;
   margin: 30px 30px 30px 30px;
