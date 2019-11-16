@@ -535,6 +535,11 @@ h6 {
   color: #ED731E;
 }
 
+
+.general-title {
+  text-align: left;
+}
+
 .general-list {
   text-align: left;
 }
@@ -602,7 +607,7 @@ h6 {
 }
 
 #services .box {
-  padding: 30px;
+  padding: 30px 50px;
   position: relative;
   overflow: hidden;
   border-radius: 10px;
