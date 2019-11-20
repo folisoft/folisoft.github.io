@@ -23,7 +23,7 @@
   <link href="lib/ionicons/css/ionicons.min.css" rel="stylesheet">
   <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
   <link href="lib/lightbox/css/lightbox.min.css" rel="stylesheet">
-
+  <!-- <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/animate.css/3.2.0/animate.min.css"> -->
   <!-- Main Stylesheet File -->
   <link href="css/style.css" rel="stylesheet">
 
@@ -530,34 +530,53 @@
               
               <h4>Send us a message</h4>
               <p>Please give us your issue and we will get in touch with you shortly.</p>
-              <form action="https://us-central1-foliteam.cloudfunctions.net/sendMail" method="post" role="form" class="contactForm" id="myForm">
+              <form role="form" class="contactForm" id="myForm">
                 <div class="form-group">
-                  <input type="text" name="name" class="form-control" id="name" placeholder="Your Name" data-rule="minlen:4" data-msg="Please enter at least 4 chars" />
-                  <div class="validation"></div>
+                  <input type="text" name="name" oninput="clearError(event)" class="form-control" id="name" placeholder="Your Name" data-rule="minlen:4" data-msg="Please enter at least 4 chars" />
+                  <label class="error text-danger mt-2" style="display: none;" for="name" id="name_error">This field is required.</label>
+
                 </div>
                 <div class="form-group">
-                  <input type="email" class="form-control" name="email" id="email" placeholder="Your Email" data-rule="email" data-msg="Please enter a valid email" />
-                  <div class="validation"></div>
+                  <input type="email" class="form-control" oninput="clearError(event)" name="email"  id="email" placeholder="Your Email" data-rule="email" data-msg="Please enter a valid email"/>
+                  <label class="error text-danger mt-2" style="display: none;" for="name" id="email_error">This field is required.</label>
+                  <label class="error text-danger mt-2" style="display: none;" for="name" id="email_validate">Email invalidate.</label>
+                  
                 </div>
                 <div class="form-group">
-                  <input type="text" class="form-control" name="subject" id="subject" placeholder="Subject" data-rule="minlen:4" data-msg="Please enter at least 8 chars of subject" />
-                  <div class="validation"></div>
+                  <input type="text" class="form-control" oninput="clearError(event)" name="subject" id="subject" placeholder="Subject" data-rule="minlen:4" data-msg="Please enter at least 8 chars of subject" />
+                  <label class="error text-danger mt-2" style="display: none;" for="name" id="subject_error">This field is required.</label>
+                  
                 </div>
                 <div class="form-group">
-                  <textarea class="form-control" name="message" rows="5" data-rule="required" data-msg="Please write something for us" placeholder="Message"></textarea>
-                  <div class="validation"></div>
+                  <textarea class="form-control"  oninput="clearError(event)" name="message" id="message" rows="5" data-rule="required" data-msg="Please write something for us" placeholder="Message"></textarea>
+                  <label class="error text-danger mt-2" style="display: none;" for="name" id="message_error">This field is required.</label>
+                  
                 </div>
 
                 <div id="sendmessage">Your message has been sent. Thank you!</div>
                 <div id="errormessage"></div>
 
-                <div class="text-center"><button type="submit" title="Send Message">Send Message</button></div>
+                <div class="text-center"><button type="button" title="Send Message" onclick="SendEmail()">Send Message</button></div>
               </form>
             </div>
 
           </div>
 
-          
+          <div class="modal animated zoomIn delay-modal" id="successPopup" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title text-success" id="exampleModalLongTitle">Success</h5>
+                  <button class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body pt-4 pb-4 pr-0">
+                  Your message has been sent to <a href="#">folisoft@gmail.com</a>. Thank you! <i class="fa fa-heart"></i>
+                </div>
+              </div>
+            </div>
+          </div>
 
         </div>
 
@@ -596,13 +615,49 @@
   <script src="lib/owlcarousel/owl.carousel.min.js"></script>
   <script src="lib/isotope/isotope.pkgd.min.js"></script>
   <script src="lib/lightbox/js/lightbox.min.js"></script>
-  <!-- Contact Form JavaScript File -->
-  <script src="contactform/contactform.js"></script>
 
   <!-- Template Main Javascript File -->
   <script src="js/main.js"></script>
-
-
+  <script>
+    function clearError(event) {
+      var idError = '#' + event.target.id + '_' + 'error';
+      $(idError.toString()).hide();
+    }
+  </script>
+  <script>
+  function SendEmail() {
+    var data = $('#myForm').serializeArray().reduce(function(obj, item) {
+      obj[item.name] = item.value;
+      return obj;
+    }, {});
+    var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    if(data.name == "") {
+      $('#name_error').show();
+      $('#name').focus();
+    }
+    if(data.email == "") {
+      $('#email_error').show();
+      $('#email').focus();
+    }
+    if(data.subject == "") {
+      $('#subject_error').show();
+      $('#subject').focus();
+    }
+    if(data.message == "") {
+      $('#message_error').show();
+      $('#message').focus();
+    }
+    if(!re.test(String(data.email).toLowerCase())) {
+      $('#email_validate').show();
+      $('#email').focus();
+    }
+    else if(data.name != "" && data.email != "" && data.subject != "" && data.message != "" && re.test(String(data.email).toLowerCase())) {
+      $.post('https://us-central1-foliteam.cloudfunctions.net/sendMail', data, function(result) {
+       $('#successPopup').modal('show');
+      });
+    }
+  }
+  </script>
     
   <!-- The core Firebase JS SDK is always required and must be listed first -->
   <script src="https://www.gstatic.com/firebasejs/7.4.0/firebase-app.js"></script>

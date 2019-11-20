@@ -1356,7 +1356,7 @@ h6 {
   border: 1px solid #d9dde6;
 }
 
-#footer .footer-top .footer-newsletter input[type="submit"] {
+#footer .footer-top .footer-newsletter input[type="submit"], button[type="button"] {
   background: #ED731E;
   border: 1px solid #ED731E;
   width: 35%;
@@ -1365,6 +1365,9 @@ h6 {
   color: #fff;
   transition: 0.3s;
   cursor: pointer;
+}
+.delay-modal {
+  animation-duration: 0.5s !important;
 }
 
 #footer .footer-top .footer-newsletter input[type="submit"]:hover {
