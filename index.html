@@ -482,8 +482,10 @@
                   <div class="footer-newsletter">
                     <h4>Our Newsletter</h4>
                     <p>We often share new design, technology that we have been working. Sign up for one or both of our newsletters.</p>
-                    <form action="" method="post">
-                      <input type="email" name="email"><input type="submit"  value="Subscribe">
+                    <form id="subscribeForm">
+                      <input type="email" name="email" oninput="clearError(event)" id="email-subscribe"><button type="button" onclick="sendSubscribe()">Subscribe</button>
+                      <label class="error text-danger mt-2" style="display: none;" for="email" id="email-subscribe_error">This field is required.</label>
+                      <label class="error text-danger mt-2" style="display: none;" for="email" id="email-subscribe_validate">Email invalidate.</label>
                     </form>
                   </div>
 
@@ -652,6 +654,29 @@
       $('#email').focus();
     }
     else if(data.name != "" && data.email != "" && data.subject != "" && data.message != "" && re.test(String(data.email).toLowerCase())) {
+      $.post('https://us-central1-foliteam.cloudfunctions.net/sendMail', data, function(result) {
+       $('#successPopup').modal('show');
+      });
+    }
+  }
+  function sendSubscribe() {
+    var data = $('#subscribeForm').serializeArray().reduce(function(obj, item) {
+      obj[item.name] = item.value;
+      return obj;
+    }, {});
+    var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    if(data.email == "") {
+      $('#email-subscribe_error').show();
+      $('#email-subscribe').focus();
+    }
+    if(!re.test(String(data.email).toLowerCase())) {
+      $('#email-subscribe_validate').show();
+      $('#email').focus();
+    }
+    else {
+      data.name = data.email;
+      data.subject = `E-mail ${data.email} has subscribed your page.`;
+      data.message = `E-mail ${data.email} has subscribed your page.`;
       $.post('https://us-central1-foliteam.cloudfunctions.net/sendMail', data, function(result) {
        $('#successPopup').modal('show');
       });
